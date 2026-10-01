@@ -1,0 +1,391 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Study Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .target {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        .progress-section {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .stat-box {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .task-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .task-section h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tasks {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .task-item:hover {
+            background: #f0f0f0;
+        }
+
+        .task-item.completed {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .task-item.completed .checkbox {
+            background: #4caf50;
+            border-color: #4caf50;
+            color: white;
+        }
+
+        .task-text {
+            flex: 1;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .task-time {
+            font-size: 12px;
+            color: #999;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        .add-task {
+            margin-top: 16px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .add-task input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .add-task input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .add-task button {
+            padding: 12px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .add-task button:hover {
+            background: #5568d3;
+        }
+
+        .reset-button {
+            margin-top: 16px;
+            padding: 12px;
+            width: 100%;
+            background: #f5f5f5;
+            color: #666;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .reset-button:hover {
+            background: #efefef;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .header {
+                padding: 16px;
+            }
+
+            .task-section {
+                padding: 16px;
+            }
+
+            .task-item {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 IELTS Preparation</h1>
+            <div class="target">Goal: 7.0+ by May 31, 2026</div>
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number" id="completedCount">0</div>
+                    <div class="stat-label">Completed Today</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number" id="percentageCount">0%</div>
+                    <div class="stat-label">Progress</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="task-section">
+            <h2>📋 Tasks for Today</h2>
+            <div class="tasks" id="tasksList"></div>
+
+            <div class="add-task">
+                <input type="text" id="newTaskInput" placeholder="Add a new task..." />
+                <button onclick="addCustomTask()">Add</button>
+            </div>
+
+            <button class="reset-button" onclick="resetDaily()">Reset Daily Tasks</button>
+        </div>
+    </div>
+
+    <script>
+        const defaultTasks = [
+            { text: 'Anki (vocabulary)', time: '30 мин', id: 'anki' },
+            { text: 'Listening/Reading practice', time: '45 мин', id: 'practice' },
+            { text: 'Speaking on Tandem', time: '20 мин', id: 'speaking' },
+            { text: 'YouTube (IELTS with Lucy/Rachel)', time: '25 мин', id: 'youtube' }
+        ];
+
+        let tasks = [];
+
+        function loadTasks() {
+            const saved = localStorage.getItem('ielts-tasks');
+            const lastReset = localStorage.getItem('last-reset');
+            const today = new Date().toDateString();
+
+            if (lastReset !== today) {
+                tasks = defaultTasks.map(t => ({ ...t, completed: false }));
+                localStorage.setItem('last-reset', today);
+            } else if (saved) {
+                tasks = JSON.parse(saved);
+            } else {
+                tasks = defaultTasks.map(t => ({ ...t, completed: false }));
+            }
+        }
+
+        function saveTasks() {
+            localStorage.setItem('ielts-tasks', JSON.stringify(tasks));
+        }
+
+        function renderTasks() {
+            const tasksList = document.getElementById('tasksList');
+            tasksList.innerHTML = '';
+
+            tasks.forEach((task, index) => {
+                const taskEl = document.createElement('div');
+                taskEl.className = `task-item ${task.completed ? 'completed' : ''}`;
+                taskEl.onclick = () => toggleTask(index);
+
+                taskEl.innerHTML = `
+                    <div class="checkbox">
+                        ${task.completed ? '✓' : ''}
+                    </div>
+                    <div class="task-text">${task.text}</div>
+                    <div class="task-time">${task.time}</div>
+                `;
+
+                tasksList.appendChild(taskEl);
+            });
+
+            updateProgress();
+        }
+
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            saveTasks();
+            renderTasks();
+        }
+
+        function addCustomTask() {
+            const input = document.getElementById('newTaskInput');
+            if (input.value.trim()) {
+                tasks.push({
+                    text: input.value.trim(),
+                    time: '?',
+                    id: 'custom-' + Date.now(),
+                    completed: false
+                });
+                input.value = '';
+                saveTasks();
+                renderTasks();
+            }
+        }
+
+        function updateProgress() {
+            const completed = tasks.filter(t => t.completed).length;
+            const total = tasks.length;
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('percentageCount').textContent = percentage + '%';
+            document.getElementById('progressFill').style.width = percentage + '%';
+        }
+
+        function resetDaily() {
+            if (confirm('Reset all tasks for today?')) {
+                tasks = defaultTasks.map(t => ({ ...t, completed: false }));
+                localStorage.removeItem('ielts-tasks');
+                localStorage.removeItem('last-reset');
+                renderTasks();
+            }
+        }
+
+        document.getElementById('newTaskInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addCustomTask();
+            }
+        });
+
+        loadTasks();
+        renderTasks();
+    </script>
+</body>
+</html>
+</body></html>
