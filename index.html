@@ -1,10 +1,9 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English C1 Tracker</title>
+    <title>English C1 Complete Tracker</title>
     <style>
         * {
             margin: 0;
@@ -22,7 +21,7 @@
         }
 
         .container {
-            max-width: 550px;
+            max-width: 600px;
             width: 100%;
             margin: 0 auto;
         }
@@ -97,14 +96,15 @@
             margin-top: 4px;
         }
 
-        .task-section {
+        .section {
             background: white;
             border-radius: 16px;
             padding: 20px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
 
-        .task-section h2 {
+        .section h2 {
             font-size: 18px;
             color: #333;
             margin-bottom: 16px;
@@ -117,6 +117,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            margin-bottom: 16px;
         }
 
         .task-item {
@@ -201,8 +202,31 @@
             line-height: 1.5;
         }
 
+        .immersion-list {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: #e65100;
+            line-height: 1.6;
+        }
+
+        .immersion-list strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .immersion-list ul {
+            margin-left: 16px;
+        }
+
+        .immersion-list li {
+            margin-bottom: 4px;
+        }
+
         .add-task {
-            margin-top: 16px;
             display: flex;
             gap: 8px;
         }
@@ -238,7 +262,6 @@
         }
 
         .reset-button {
-            margin-top: 16px;
             padding: 12px;
             width: 100%;
             background: #f5f5f5;
@@ -254,6 +277,37 @@
             background: #efefef;
         }
 
+        .tab-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         @media (max-width: 480px) {
             body {
                 padding: 12px;
@@ -263,7 +317,7 @@
                 padding: 16px;
             }
 
-            .task-section {
+            .section {
                 padding: 16px;
             }
 
@@ -280,8 +334,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎯 English for Doctorate</h1>
-            <div class="target">Goal: C1 Level by May 2027 | 30 min/day</div>
+            <h1>🎯 English C1 Tracker</h1>
+            <div class="target">B1 → C1 by May 2027 | 30 min active + 2-3 hours immersion</div>
         </div>
 
         <div class="progress-section">
@@ -291,74 +345,131 @@
             <div class="stats">
                 <div class="stat-box">
                     <div class="stat-number" id="completedCount">0</div>
-                    <div class="stat-label">Completed This Week</div>
+                    <div class="stat-label">Active Tasks Done</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-number" id="percentageCount">0%</div>
-                    <div class="stat-label">Progress</div>
+                    <div class="stat-label">Weekly Progress</div>
                 </div>
             </div>
         </div>
 
-        <div class="task-section">
-            <h2>📋 Weekly Plan</h2>
+        <!-- TAB NAVIGATION -->
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('active')">📚 Active Study</button>
+            <button class="tab-btn" onclick="switchTab('immersion')">🎬 Immersion</button>
+        </div>
 
-            <div class="info-box">
-                ⚡ <strong>Remember:</strong> 30 min of focused study + background immersion (podcasts, films, reading) daily = C1 by May!
+        <!-- ACTIVE STUDY TAB -->
+        <div id="active" class="tab-content active">
+            <div class="section">
+                <h2>📋 Active Study (30 min/day)</h2>
+
+                <div class="info-box">
+                    ⚡ <strong>Daily focused study:</strong> Follow the 30-min daily plan (Vocabulary → Listening → Reading → Writing → Speaking)
+                </div>
+
+                <div class="tasks" id="tasksList"></div>
+
+                <div class="add-task">
+                    <input type="text" id="newTaskInput" placeholder="Add custom task..." />
+                    <button onclick="addCustomTask()">Add</button>
+                </div>
+
+                <button class="reset-button" onclick="resetDaily()">Reset Weekly Tasks</button>
             </div>
+        </div>
 
-            <div class="tasks" id="tasksList"></div>
+        <!-- IMMERSION TAB -->
+        <div id="immersion" class="tab-content">
+            <div class="section">
+                <h2>🎬 Immersion (2-3 hours/day)</h2>
 
-            <div class="add-task">
-                <input type="text" id="newTaskInput" placeholder="Add custom task..." />
-                <button onclick="addCustomTask()">Add</button>
+                <div class="immersion-list">
+                    <strong>🎯 Why immersion matters:</strong>
+                    Watching films, listening to podcasts, and reading in English = 50% of your C1 progress!<br>
+                    <strong>Rule:</strong> Pick what interests YOU. If bored → change source.
+                </div>
+
+                <div class="tasks" id="immersionList"></div>
             </div>
-
-            <button class="reset-button" onclick="resetDaily()">Reset Weekly Tasks</button>
         </div>
     </div>
 
     <script>
-        const defaultTasks = [
+        const activeStudyTasks = [
             {
-                text: 'MONDAY: Vocabulary',
+                text: 'MON: Vocabulary',
                 time: '30 мин',
                 id: 'mon',
-                desc: 'Quizlet/Anki - IELTS/Academic Words'
+                desc: 'Quizlet/Anki - +10-15 words'
             },
             {
-                text: 'TUESDAY: Listening',
+                text: 'TUE: Listening',
                 time: '30 мин',
                 id: 'tue',
-                desc: 'BBC Learning English or TED-Ed (YouTube)'
+                desc: 'BBC Learning English / TED-Ed (YouTube)'
             },
             {
-                text: 'WEDNESDAY: Reading',
+                text: 'WED: Reading',
                 time: '30 мин',
                 id: 'wed',
                 desc: 'News in Levels / Medium.com / Articles'
             },
             {
-                text: 'THURSDAY: Writing',
+                text: 'THU: Writing',
                 time: '30 мин',
                 id: 'thu',
-                desc: 'Lang-8 - Write & get corrections from natives'
+                desc: 'Lang-8 - Write & get corrections'
             },
             {
-                text: 'FRIDAY: Speaking',
+                text: 'FRI: Speaking',
                 time: '30 мин',
                 id: 'fri',
-                desc: 'Tandem app / Record yourself / Online exchange'
+                desc: 'Tandem app / Record yourself'
             },
             {
-                text: 'WEEKEND: Immersion',
-                time: '2+ часа',
+                text: 'SAT-SUN: Prep',
+                time: 'flexible',
                 id: 'weekend',
-                desc: 'Films, podcasts, books in English'
+                desc: 'Extra practice or review'
             }
         ];
 
-        let tasks = [];
+        const immersionTasks = [
+            {
+                text: '🎬 Watch Films/Series',
+                time: '1-2 hrs',
+                id: 'films',
+                desc: 'Friends (B1) → Suits (B2) → Breaking Bad (C1) - WITH SUBTITLES'
+            },
+            {
+                text: '🎧 Listen to Podcasts',
+                time: '30-60 min',
+                id: 'podcasts',
+                desc: '"6 Minute English" (BBC) / "The English We Speak" / "TED Radio Hour"'
+            },
+            {
+                text: '📖 Read News/Articles',
+                time: '20-30 min',
+                id: 'reading',
+                desc: 'Medium.com / BBC / The Guardian - while eating/commuting'
+            },
+            {
+                text: '🎵 Listen to Music/Audiobooks',
+                time: '20-40 min',
+                id: 'music',
+                desc: 'English songs / Audiobooks / Documentary soundtracks'
+            },
+            {
+                text: '🏃 Podcasts on the Go',
+                time: '30-60 min',
+                id: 'commute',
+                desc: 'During walks, gym, or commute - Spotify / YouTube'
+            }
+        ];
+
+        let activeTasks = [];
         let weekStartDate = null;
 
         function getWeekStart() {
@@ -371,30 +482,30 @@
 
         function loadTasks() {
             const weekStart = getWeekStart();
-            const saved = localStorage.getItem('english-tasks');
-            const savedWeek = localStorage.getItem('week-start');
+            const saved = localStorage.getItem('english-tasks-complete');
+            const savedWeek = localStorage.getItem('week-start-complete');
 
             if (savedWeek !== weekStart) {
-                tasks = defaultTasks.map(t => ({ ...t, completed: false }));
-                localStorage.setItem('week-start', weekStart);
+                activeTasks = activeStudyTasks.map(t => ({ ...t, completed: false }));
+                localStorage.setItem('week-start-complete', weekStart);
             } else if (saved) {
-                tasks = JSON.parse(saved);
+                activeTasks = JSON.parse(saved);
             } else {
-                tasks = defaultTasks.map(t => ({ ...t, completed: false }));
+                activeTasks = activeStudyTasks.map(t => ({ ...t, completed: false }));
             }
 
             weekStartDate = weekStart;
         }
 
         function saveTasks() {
-            localStorage.setItem('english-tasks', JSON.stringify(tasks));
+            localStorage.setItem('english-tasks-complete', JSON.stringify(activeTasks));
         }
 
         function renderTasks() {
             const tasksList = document.getElementById('tasksList');
             tasksList.innerHTML = '';
 
-            tasks.forEach((task, index) => {
+            activeTasks.forEach((task, index) => {
                 const taskEl = document.createElement('div');
                 taskEl.className = `task-item ${task.completed ? 'completed' : ''}`;
                 taskEl.onclick = () => toggleTask(index);
@@ -420,11 +531,32 @@
                 tasksList.appendChild(taskEl);
             });
 
+            // Render immersion tasks
+            const immersionList = document.getElementById('immersionList');
+            immersionList.innerHTML = '';
+
+            immersionTasks.forEach((task) => {
+                const taskEl = document.createElement('div');
+                taskEl.className = 'task-item';
+                taskEl.style.cursor = 'default';
+
+                let html = `
+                    <div style="flex: 1;">
+                        <div class="task-text">${task.text}</div>
+                        <div class="task-desc">${task.desc}</div>
+                    </div>
+                    <div class="task-time">${task.time}</div>
+                `;
+
+                taskEl.innerHTML = html;
+                immersionList.appendChild(taskEl);
+            });
+
             updateProgress();
         }
 
         function toggleTask(index) {
-            tasks[index].completed = !tasks[index].completed;
+            activeTasks[index].completed = !activeTasks[index].completed;
             saveTasks();
             renderTasks();
         }
@@ -432,7 +564,7 @@
         function addCustomTask() {
             const input = document.getElementById('newTaskInput');
             if (input.value.trim()) {
-                tasks.push({
+                activeTasks.push({
                     text: input.value.trim(),
                     time: '30 мин',
                     id: 'custom-' + Date.now(),
@@ -446,8 +578,8 @@
         }
 
         function updateProgress() {
-            const completed = tasks.filter(t => t.completed).length;
-            const total = tasks.length;
+            const completed = activeTasks.filter(t => t.completed).length;
+            const total = activeTasks.length;
             const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
 
             document.getElementById('completedCount').textContent = completed;
@@ -457,12 +589,30 @@
 
         function resetDaily() {
             if (confirm('Reset all weekly tasks?')) {
-                tasks = defaultTasks.map(t => ({ ...t, completed: false }));
-                localStorage.removeItem('english-tasks');
-                localStorage.removeItem('week-start');
+                activeTasks = activeStudyTasks.map(t => ({ ...t, completed: false }));
+                localStorage.removeItem('english-tasks-complete');
+                localStorage.removeItem('week-start-complete');
                 loadTasks();
                 renderTasks();
             }
+        }
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+
+            // Highlight button
+            event.target.classList.add('active');
         }
 
         document.getElementById('newTaskInput').addEventListener('keypress', (e) => {
@@ -476,4 +626,3 @@
     </script>
 </body>
 </html>
-</body></html>
