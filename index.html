@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IELTS Study Tracker</title>
+    <title>English C1 Tracker</title>
     <style>
         * {
             margin: 0;
@@ -22,7 +22,7 @@
         }
 
         .container {
-            max-width: 500px;
+            max-width: 550px;
             width: 100%;
             margin: 0 auto;
         }
@@ -121,7 +121,7 @@
 
         .task-item {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 12px;
             padding: 16px;
             background: #f9f9f9;
@@ -156,6 +156,7 @@
             justify-content: center;
             flex-shrink: 0;
             transition: all 0.2s ease;
+            margin-top: 2px;
         }
 
         .task-item.completed .checkbox {
@@ -164,17 +165,40 @@
             color: white;
         }
 
-        .task-text {
+        .task-content {
             flex: 1;
+        }
+
+        .task-text {
             font-size: 15px;
             color: #333;
+            font-weight: 600;
+        }
+
+        .task-desc {
+            font-size: 13px;
+            color: #999;
+            margin-top: 4px;
+            font-weight: 400;
         }
 
         .task-time {
             font-size: 12px;
             color: #999;
-            min-width: 40px;
             text-align: right;
+            min-width: 50px;
+            flex-shrink: 0;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: #1565c0;
+            line-height: 1.5;
         }
 
         .add-task {
@@ -246,14 +270,18 @@
             .task-item {
                 padding: 12px;
             }
+
+            .header h1 {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎯 IELTS Preparation</h1>
-            <div class="target">Goal: 7.0+ by May 31, 2026</div>
+            <h1>🎯 English for Doctorate</h1>
+            <div class="target">Goal: C1 Level by May 2027 | 30 min/day</div>
         </div>
 
         <div class="progress-section">
@@ -263,7 +291,7 @@
             <div class="stats">
                 <div class="stat-box">
                     <div class="stat-number" id="completedCount">0</div>
-                    <div class="stat-label">Completed Today</div>
+                    <div class="stat-label">Completed This Week</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-number" id="percentageCount">0%</div>
@@ -273,45 +301,93 @@
         </div>
 
         <div class="task-section">
-            <h2>📋 Tasks for Today</h2>
+            <h2>📋 Weekly Plan</h2>
+
+            <div class="info-box">
+                ⚡ <strong>Remember:</strong> 30 min of focused study + background immersion (podcasts, films, reading) daily = C1 by May!
+            </div>
+
             <div class="tasks" id="tasksList"></div>
 
             <div class="add-task">
-                <input type="text" id="newTaskInput" placeholder="Add a new task..." />
+                <input type="text" id="newTaskInput" placeholder="Add custom task..." />
                 <button onclick="addCustomTask()">Add</button>
             </div>
 
-            <button class="reset-button" onclick="resetDaily()">Reset Daily Tasks</button>
+            <button class="reset-button" onclick="resetDaily()">Reset Weekly Tasks</button>
         </div>
     </div>
 
     <script>
         const defaultTasks = [
-            { text: 'Anki (vocabulary)', time: '30 мин', id: 'anki' },
-            { text: 'Listening/Reading practice', time: '45 мин', id: 'practice' },
-            { text: 'Speaking on Tandem', time: '20 мин', id: 'speaking' },
-            { text: 'YouTube (IELTS with Lucy/Rachel)', time: '25 мин', id: 'youtube' }
+            {
+                text: 'MONDAY: Vocabulary',
+                time: '30 мин',
+                id: 'mon',
+                desc: 'Quizlet/Anki - IELTS/Academic Words'
+            },
+            {
+                text: 'TUESDAY: Listening',
+                time: '30 мин',
+                id: 'tue',
+                desc: 'BBC Learning English or TED-Ed (YouTube)'
+            },
+            {
+                text: 'WEDNESDAY: Reading',
+                time: '30 мин',
+                id: 'wed',
+                desc: 'News in Levels / Medium.com / Articles'
+            },
+            {
+                text: 'THURSDAY: Writing',
+                time: '30 мин',
+                id: 'thu',
+                desc: 'Lang-8 - Write & get corrections from natives'
+            },
+            {
+                text: 'FRIDAY: Speaking',
+                time: '30 мин',
+                id: 'fri',
+                desc: 'Tandem app / Record yourself / Online exchange'
+            },
+            {
+                text: 'WEEKEND: Immersion',
+                time: '2+ часа',
+                id: 'weekend',
+                desc: 'Films, podcasts, books in English'
+            }
         ];
 
         let tasks = [];
+        let weekStartDate = null;
+
+        function getWeekStart() {
+            const today = new Date();
+            const day = today.getDay();
+            const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+            const monday = new Date(today.setDate(diff));
+            return monday.toDateString();
+        }
 
         function loadTasks() {
-            const saved = localStorage.getItem('ielts-tasks');
-            const lastReset = localStorage.getItem('last-reset');
-            const today = new Date().toDateString();
+            const weekStart = getWeekStart();
+            const saved = localStorage.getItem('english-tasks');
+            const savedWeek = localStorage.getItem('week-start');
 
-            if (lastReset !== today) {
+            if (savedWeek !== weekStart) {
                 tasks = defaultTasks.map(t => ({ ...t, completed: false }));
-                localStorage.setItem('last-reset', today);
+                localStorage.setItem('week-start', weekStart);
             } else if (saved) {
                 tasks = JSON.parse(saved);
             } else {
                 tasks = defaultTasks.map(t => ({ ...t, completed: false }));
             }
+
+            weekStartDate = weekStart;
         }
 
         function saveTasks() {
-            localStorage.setItem('ielts-tasks', JSON.stringify(tasks));
+            localStorage.setItem('english-tasks', JSON.stringify(tasks));
         }
 
         function renderTasks() {
@@ -323,14 +399,24 @@
                 taskEl.className = `task-item ${task.completed ? 'completed' : ''}`;
                 taskEl.onclick = () => toggleTask(index);
 
-                taskEl.innerHTML = `
+                let html = `
                     <div class="checkbox">
                         ${task.completed ? '✓' : ''}
                     </div>
-                    <div class="task-text">${task.text}</div>
+                    <div class="task-content">
+                        <div class="task-text">${task.text}</div>
+                `;
+
+                if (task.desc) {
+                    html += `<div class="task-desc">${task.desc}</div>`;
+                }
+
+                html += `
+                    </div>
                     <div class="task-time">${task.time}</div>
                 `;
 
+                taskEl.innerHTML = html;
                 tasksList.appendChild(taskEl);
             });
 
@@ -348,9 +434,10 @@
             if (input.value.trim()) {
                 tasks.push({
                     text: input.value.trim(),
-                    time: '?',
+                    time: '30 мин',
                     id: 'custom-' + Date.now(),
-                    completed: false
+                    completed: false,
+                    desc: 'Custom task'
                 });
                 input.value = '';
                 saveTasks();
@@ -369,10 +456,11 @@
         }
 
         function resetDaily() {
-            if (confirm('Reset all tasks for today?')) {
+            if (confirm('Reset all weekly tasks?')) {
                 tasks = defaultTasks.map(t => ({ ...t, completed: false }));
-                localStorage.removeItem('ielts-tasks');
-                localStorage.removeItem('last-reset');
+                localStorage.removeItem('english-tasks');
+                localStorage.removeItem('week-start');
+                loadTasks();
                 renderTasks();
             }
         }
